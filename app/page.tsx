@@ -5,6 +5,7 @@ import { Navigation } from "@/components/navigation"
 import { IssuesList } from "@/components/issues-list"
 import { CurrentSprintView } from "@/components/current-sprint-view"
 import { SprintsView } from "@/components/sprints-view"
+import { ReportingView } from "@/components/reporting-view"
 import { initialIssues, initialSprints, generateTaskId } from "@/lib/data"
 import type { Issue, Sprint, ViewType, IssueStatus } from "@/types"
 
@@ -180,6 +181,13 @@ export default function TaskFlowApp() {
             onEditSprint={handleEditSprint}
             onStartSprint={handleStartSprint}
             onEndSprint={handleEndSprint}
+          />
+        )
+      case "reporting":
+        return (
+          <ReportingView
+            issues={issues}
+            sprints={sprints}
           />
         )
       default:

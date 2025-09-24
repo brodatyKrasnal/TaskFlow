@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { List, Kanban, Calendar, Target } from "lucide-react"
+import { List, Kanban, Calendar, Target, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { ViewType, Issue, Sprint } from "@/types"
 
@@ -36,6 +36,12 @@ export function Navigation({ currentView, onViewChange, issues, sprints }: Navig
       label: "Sprints",
       icon: Calendar,
       count: sprints.length,
+    },
+    {
+      id: "reporting" as ViewType,
+      label: "Reporting",
+      icon: BarChart3,
+      count: new Set(issues.map(issue => issue.assignee)).size,
     },
   ]
 

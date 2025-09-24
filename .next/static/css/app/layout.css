@@ -32,10 +32,13 @@ font-weight: 100 900;
 @layer theme {
   :root, :host {
     --color-red-50: oklch(97.1% 0.013 17.38);
+    --color-red-100: oklch(93.6% 0.032 17.717);
+    --color-red-200: oklch(88.5% 0.062 18.334);
     --color-red-300: oklch(80.8% 0.114 19.571);
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-600: oklch(57.7% 0.245 27.325);
+    --color-red-800: oklch(44.4% 0.177 26.899);
     --color-orange-100: oklch(95.4% 0.038 75.164);
     --color-orange-200: oklch(90.1% 0.076 70.697);
     --color-orange-500: oklch(70.5% 0.213 47.604);
@@ -58,6 +61,7 @@ font-weight: 100 900;
     --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-blue-600: oklch(54.6% 0.245 262.881);
     --color-blue-800: oklch(42.4% 0.199 265.638);
+    --color-purple-600: oklch(55.8% 0.288 302.321);
     --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -724,6 +728,9 @@ font-weight: 100 900;
   .w-9 {
     width: calc(var(--spacing) * 9);
   }
+  .w-10 {
+    width: calc(var(--spacing) * 10);
+  }
   .w-12 {
     width: calc(var(--spacing) * 12);
   }
@@ -1198,6 +1205,9 @@ font-weight: 100 900;
   .border-primary {
     border-color: var(--primary);
   }
+  .border-red-200 {
+    border-color: var(--color-red-200);
+  }
   .border-red-500 {
     border-color: var(--color-red-500);
   }
@@ -1312,11 +1322,20 @@ font-weight: 100 900;
       background-color: color-mix(in oklab, var(--primary) 5%, transparent);
     }
   }
+  .bg-primary\/10 {
+    background-color: var(--primary);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--primary) 10%, transparent);
+    }
+  }
   .bg-primary\/20 {
     background-color: var(--primary);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--primary) 20%, transparent);
     }
+  }
+  .bg-red-100 {
+    background-color: var(--color-red-100);
   }
   .bg-red-500 {
     background-color: var(--color-red-500);
@@ -1431,6 +1450,9 @@ font-weight: 100 900;
   }
   .pt-0 {
     padding-top: calc(var(--spacing) * 0);
+  }
+  .pt-2 {
+    padding-top: calc(var(--spacing) * 2);
   }
   .pt-3 {
     padding-top: calc(var(--spacing) * 3);
@@ -1629,8 +1651,17 @@ font-weight: 100 900;
   .text-primary-foreground {
     color: var(--primary-foreground);
   }
+  .text-purple-600 {
+    color: var(--color-purple-600);
+  }
   .text-red-500 {
     color: var(--color-red-500);
+  }
+  .text-red-600 {
+    color: var(--color-red-600);
+  }
+  .text-red-800 {
+    color: var(--color-red-800);
   }
   .text-secondary-foreground {
     color: var(--secondary-foreground);

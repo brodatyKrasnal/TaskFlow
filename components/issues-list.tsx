@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { IssueCard } from "./issue-card"
 import { IssueForm } from "./issue-form"
-import { Search, Plus, ChevronDown, ChevronRight } from "lucide-react"
+import { Search, Plus, ChevronDown, ChevronRight, ArrowUpDown } from "lucide-react"
 import type { Issue, Sprint, Priority, IssueStatus } from "@/types"
 
 interface IssuesListProps {
@@ -32,6 +32,7 @@ export function IssuesList({
   const [statusFilter, setStatusFilter] = useState<IssueStatus | "all">("all")
   const [sprintFilter, setSprintFilter] = useState<string>("all")
   const [showDoneIssues, setShowDoneIssues] = useState(false)
+  const [sortBy, setSortBy] = useState<"none" | "sprint" | "status">("none")
 
   const allFilteredIssues = issues.filter((issue) => {
     const matchesSearch =
@@ -47,8 +48,31 @@ export function IssuesList({
     return matchesSearch && matchesPriority && matchesStatus && matchesSprint
   })
 
-  const activeIssues = allFilteredIssues.filter((issue) => issue.status !== "Done")
-  const doneIssues = allFilteredIssues.filter((issue) => issue.status === "Done")
+  // Apply sorting
+  const sortedIssues = [...allFilteredIssues].sort((a, b) => {
+    if (sortBy === "sprint") {
+      const aSprint = sprints.find(s => s.id === a.sprintId)
+      const bSprint = sprints.find(s => s.id === b.sprintId)
+      
+      // Issues without sprint go to the end
+      if (!aSprint && !bSprint) return 0
+      if (!aSprint) return 1
+      if (!bSprint) return -1
+      
+      // Sort by sprint start date (earliest first)
+      return new Date(aSprint.startDate).getTime() - new Date(bSprint.startDate).getTime()
+    }
+    
+    if (sortBy === "status") {
+      const statusOrder = { "Todo": 0, "In Progress": 1, "In Review": 2, "Done": 3 }
+      return statusOrder[a.status] - statusOrder[b.status]
+    }
+    
+    return 0 // No sorting
+  })
+
+  const activeIssues = sortedIssues.filter((issue) => issue.status !== "Done")
+  const doneIssues = sortedIssues.filter((issue) => issue.status === "Done")
 
   return (
     <div className="space-y-6">
@@ -126,6 +150,23 @@ export function IssuesList({
                     {sprint.name}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-gray-500">Sort:</span>
+            <Select value={sortBy} onValueChange={(value: "none" | "sprint" | "status") => setSortBy(value)}>
+              <SelectTrigger className="h-8 px-3 text-xs border-0 rounded-md bg-transparent hover:bg-gray-50/50 focus:ring-0 focus:ring-offset-0 outline-none">
+                <div className="flex items-center gap-1">
+                  <ArrowUpDown className="h-3 w-3 text-gray-400" />
+                  <SelectValue placeholder="None" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="sprint">By Sprint</SelectItem>
+                <SelectItem value="status">By Status</SelectItem>
               </SelectContent>
             </Select>
           </div>
