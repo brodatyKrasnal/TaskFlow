@@ -47,24 +47,24 @@ export function SprintsView({
     })
   }
 
-      const getSprintProgress = (sprint: Sprint) => {
-        const now = new Date()
-        const start = new Date(sprint.startDate)
-        const end = new Date(sprint.endDate)
-        
-        // If sprint hasn't started yet
-        if (now < start) return 0
-        
-        // If sprint has ended
-        if (now > end) return 100
-        
-        // Calculate progress percentage
-        const totalDuration = end.getTime() - start.getTime()
-        const elapsed = now.getTime() - start.getTime()
-        const progress = (elapsed / totalDuration) * 100
-        
-        return Math.min(Math.max(progress, 0), 100)
-      }
+  const getSprintProgress = (sprint: Sprint) => {
+    const now = new Date()
+    const start = new Date(sprint.startDate)
+    const end = new Date(sprint.endDate)
+    
+    // If sprint hasn't started yet
+    if (now < start) return 0
+    
+    // If sprint has ended
+    if (now > end) return 100
+    
+    // Calculate working days progress
+    const totalWorkingDays = getWorkingDays(start, end)
+    const elapsedWorkingDays = getWorkingDays(start, now)
+    const progress = (elapsedWorkingDays / totalWorkingDays) * 100
+    
+    return Math.min(Math.max(progress, 0), 100)
+  }
 
       const getPolishHolidays = (year: number) => {
         return [
@@ -132,14 +132,6 @@ export function SprintsView({
         />
       </div>
 
-      {hasActiveSprint && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
-            <strong>Note:</strong> Only one sprint can be active at a time. End the current active sprint before
-            starting a new one.
-          </p>
-        </div>
-      )}
 
       <div className="space-y-3">
         {sortedSprints.map((sprint) => {

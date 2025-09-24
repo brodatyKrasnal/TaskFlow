@@ -49,6 +49,71 @@ export function CurrentSprintView({ sprint, issues, onUpdateIssueStatus }: Curre
     return diffDays
   }
 
+  const getPolishHolidays = (year: number) => {
+    return [
+      new Date(year, 0, 1),   // New Year's Day
+      new Date(year, 0, 6),   // Epiphany
+      new Date(year, 4, 1),   // Labour Day
+      new Date(year, 4, 3),   // Constitution Day
+      new Date(year, 5, 7),   // Pentecost (calculated for 2024)
+      new Date(year, 7, 15),  // Assumption of the Blessed Virgin Mary
+      new Date(year, 10, 1),  // All Saints' Day
+      new Date(year, 10, 11), // Independence Day
+      new Date(year, 11, 25), // Christmas Day
+      new Date(year, 11, 26), // Boxing Day
+    ]
+  }
+
+  const getWorkingDays = (startDate: Date, endDate: Date) => {
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    let workingDays = 0
+    const current = new Date(start)
+    
+    // Get holidays for the year range
+    const holidays = []
+    for (let year = start.getFullYear(); year <= end.getFullYear(); year++) {
+      holidays.push(...getPolishHolidays(year))
+    }
+    
+    while (current <= end) {
+      const dayOfWeek = current.getDay()
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 // Sunday or Saturday
+      const isHoliday = holidays.some(holiday => 
+        holiday.getDate() === current.getDate() && 
+        holiday.getMonth() === current.getMonth() && 
+        holiday.getFullYear() === current.getFullYear()
+      )
+      
+      if (!isWeekend && !isHoliday) {
+        workingDays++
+      }
+      
+      current.setDate(current.getDate() + 1)
+    }
+    
+    return workingDays
+  }
+
+  const getSprintProgress = (sprint: Sprint) => {
+    const now = new Date()
+    const start = new Date(sprint.startDate)
+    const end = new Date(sprint.endDate)
+    
+    // If sprint hasn't started yet
+    if (now < start) return 0
+    
+    // If sprint has ended
+    if (now > end) return 100
+    
+    // Calculate working days progress
+    const totalWorkingDays = getWorkingDays(start, end)
+    const elapsedWorkingDays = getWorkingDays(start, now)
+    const progress = (elapsedWorkingDays / totalWorkingDays) * 100
+    
+    return Math.min(Math.max(progress, 0), 100)
+  }
+
   const daysRemaining = getDaysRemaining()
 
   return (
@@ -69,8 +134,8 @@ export function CurrentSprintView({ sprint, issues, onUpdateIssueStatus }: Curre
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
+            <div className="flex items-start gap-3">
+              <Calendar className="h-5 w-5 text-muted-foreground" style={{ marginTop: '7px' }} />
               <div>
                 <p className="text-sm font-medium">Duration</p>
                 <p className="text-sm text-muted-foreground">
@@ -79,45 +144,52 @@ export function CurrentSprintView({ sprint, issues, onUpdateIssueStatus }: Curre
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Users className="h-5 w-5 text-muted-foreground" />
-              <div>
+            <div className="flex items-start gap-3">
+              <Users className="h-5 w-5 text-muted-foreground" style={{ marginTop: '7px' }} />
+              <div className="flex-1">
                 <p className="text-sm font-medium">Progress</p>
-                <p className="text-sm text-muted-foreground">
-                  {completedIssues.length} of {sprintIssues.length} issues completed
-                </p>
+                {sprintIssues.length > 0 ? (
+                  <div style={{ marginTop: '-15px' }}>
+                    <div className="flex items-center justify-end text-xs text-muted-foreground mb-1">
+                      <span>{Math.round((completedIssues.length / sprintIssues.length) * 100)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
+                      <div
+                        className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${(completedIssues.length / sprintIssues.length) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No tasks assigned</p>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Target className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Time Remaining</p>
-                <p className="text-sm text-muted-foreground">
-                  {daysRemaining > 0 ? `${daysRemaining} days left` : "Sprint ended"}
-                </p>
+            <div className="flex items-start gap-3">
+              <Target className="h-5 w-5 text-muted-foreground" style={{ marginTop: '7px' }} />
+              <div className="flex-1">
+                <p className="text-sm font-medium">Sprint Progress</p>
+                <div style={{ marginTop: '-15px' }}>
+                  <div className="flex items-center justify-end text-xs text-muted-foreground mb-1">
+                    <span>{Math.max(0, Math.ceil((new Date(sprint.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days left</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div
+                      className="bg-orange-500 h-1.5 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${getSprintProgress(sprint)}%`,
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {sprintIssues.length > 0 && (
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Sprint Progress</span>
-                <span className="text-sm text-muted-foreground">
-                  {Math.round((completedIssues.length / sprintIssues.length) * 100)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{
-                    width: `${(completedIssues.length / sprintIssues.length) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
+
         </CardContent>
       </Card>
 
