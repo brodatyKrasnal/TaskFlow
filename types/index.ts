@@ -10,6 +10,8 @@ export interface Issue {
   status: IssueStatus
   assignee: string
   sprintId?: string
+  startDate?: Date
+  deliveryDate?: Date
   createdAt: Date
   updatedAt: Date
 }

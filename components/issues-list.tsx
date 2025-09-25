@@ -30,6 +30,7 @@ export function IssuesList({
   const [priorityFilter, setPriorityFilter] = useState<Priority | "all">("all")
   const [statusFilter, setStatusFilter] = useState<IssueStatus | "all">("all")
   const [sprintFilter, setSprintFilter] = useState<string>("all")
+  const [sortBy, setSortBy] = useState<"none" | "status" | "sprint">("none")
 
   const filteredIssues = issues.filter((issue) => {
     const matchesSearch =
@@ -45,10 +46,26 @@ export function IssuesList({
     return matchesSearch && matchesPriority && matchesStatus && matchesSprint
   })
 
+  const sortedIssues = [...filteredIssues].sort((a, b) => {
+    if (sortBy === "status") {
+      return a.status.localeCompare(b.status)
+    } else if (sortBy === "sprint") {
+      const aSprint = sprints.find(s => s.id === a.sprintId)?.name || "Backlog"
+      const bSprint = sprints.find(s => s.id === b.sprintId)?.name || "Backlog"
+      return aSprint.localeCompare(bSprint)
+    }
+    return 0
+  })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Issues</h1>
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-2xl font-semibold">Issues</h1>
+          <span className="text-xs text-muted-foreground">
+            {sortedIssues.length} of {issues.length}
+          </span>
+        </div>
         <IssueForm
           sprints={sprints}
           onSubmit={onCreateIssue}
@@ -62,23 +79,36 @@ export function IssuesList({
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search issues..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+        <div className="flex gap-4 flex-1">
+          <Select value={sortBy} onValueChange={(value: "none" | "status" | "sprint") => setSortBy(value)}>
+            <SelectTrigger className="w-32 border-0 shadow-none bg-transparent hover:bg-transparent focus:ring-0 focus:ring-offset-0 outline-none">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Sort</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+              <SelectItem value="sprint">Sprint</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search issues..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 border-0 border-b border-gray-300 shadow-none bg-transparent focus:ring-0 focus:ring-offset-0 outline-none focus:border-b-gray-500"
+            />
+          </div>
         </div>
 
         <div className="flex gap-2">
           <Select value={priorityFilter} onValueChange={(value: Priority | "all") => setPriorityFilter(value)}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 border-0 shadow-none bg-transparent hover:bg-transparent focus:ring-0 focus:ring-offset-0 outline-none">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="all">Priorities</SelectItem>
               <SelectItem value="P0">P0</SelectItem>
               <SelectItem value="P1">P1</SelectItem>
               <SelectItem value="P2">P2</SelectItem>
@@ -89,11 +119,11 @@ export function IssuesList({
           </Select>
 
           <Select value={statusFilter} onValueChange={(value: IssueStatus | "all") => setStatusFilter(value)}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 border-0 shadow-none bg-transparent hover:bg-transparent focus:ring-0 focus:ring-offset-0 outline-none">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="all">Status</SelectItem>
               <SelectItem value="Todo">Todo</SelectItem>
               <SelectItem value="In Progress">In Progress</SelectItem>
               <SelectItem value="In Review">In Review</SelectItem>
@@ -102,11 +132,11 @@ export function IssuesList({
           </Select>
 
           <Select value={sprintFilter} onValueChange={setSprintFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40 border-0 shadow-none bg-transparent hover:bg-transparent focus:ring-0 focus:ring-offset-0 outline-none">
               <SelectValue placeholder="Sprint" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Sprints</SelectItem>
+              <SelectItem value="all">Sprints</SelectItem>
               <SelectItem value="backlog">Backlog</SelectItem>
               {sprints.map((sprint) => (
                 <SelectItem key={sprint.id} value={sprint.id}>
@@ -118,12 +148,8 @@ export function IssuesList({
         </div>
       </div>
 
-      <div className="text-sm text-muted-foreground">
-        Showing {filteredIssues.length} of {issues.length} issues
-      </div>
-
       <div className="space-y-4">
-        {filteredIssues.map((issue) => (
+        {sortedIssues.map((issue) => (
           <IssueCard
             key={issue.id}
             issue={issue}
@@ -135,7 +161,7 @@ export function IssuesList({
         ))}
       </div>
 
-      {filteredIssues.length === 0 && (
+      {sortedIssues.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No issues found matching your filters.</p>
         </div>
