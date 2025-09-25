@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Navigation } from "@/components/navigation"
 import { IssuesList } from "@/components/issues-list"
 import { CurrentSprintView } from "@/components/current-sprint-view"
+import { TimelineView } from "@/components/timeline-view"
 import { SprintsView } from "@/components/sprints-view"
 import { ReportingView } from "@/components/reporting-view"
 import { initialIssues, initialSprints, generateTaskId } from "@/lib/data"
@@ -170,6 +171,16 @@ export default function TaskFlowApp() {
             sprint={activeSprint || null}
             issues={issues}
             onUpdateIssueStatus={handleUpdateIssueStatus}
+          />
+        )
+      case "timeline":
+        return (
+          <TimelineView
+            issues={issues}
+            sprints={sprints}
+            onEditIssue={handleEditIssue}
+            onCreateIssue={handleCreateIssue}
+            onDeleteIssue={handleDeleteIssue}
           />
         )
       case "sprints":

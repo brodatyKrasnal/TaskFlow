@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { List, Kanban, Calendar, Target, BarChart3 } from "lucide-react"
+import { List, Kanban, Calendar, Target, BarChart3, BarChart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { ViewType, Issue, Sprint } from "@/types"
 
@@ -24,6 +24,12 @@ export function Navigation({ currentView, onViewChange, issues, sprints }: Navig
       icon: Kanban,
       count: activeSprintIssues.length,
       disabled: !activeSprint,
+    },
+    {
+      id: "timeline" as ViewType,
+      label: "Timeline",
+      icon: BarChart,
+      count: issues.filter(issue => issue.startDate || issue.deliveryDate).length,
     },
     {
       id: "issues" as ViewType,
