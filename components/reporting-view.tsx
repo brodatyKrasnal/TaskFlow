@@ -261,3 +261,4 @@ export function ReportingView({ issues, sprints }: ReportingViewProps) {
     </div>
   )
 }
+

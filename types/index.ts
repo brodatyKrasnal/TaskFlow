@@ -24,4 +24,4 @@ export interface Sprint {
   updatedAt: Date
 }
 
-export type ViewType = "issues" | "current-sprint" | "sprints" | "reporting"
+export type ViewType = "issues" | "current-sprint" | "sprints"
