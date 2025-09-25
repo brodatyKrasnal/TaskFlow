@@ -10,7 +10,7 @@ import { initialIssues, initialSprints, generateTaskId } from "@/lib/data"
 import type { Issue, Sprint, ViewType, IssueStatus } from "@/types"
 
 export default function TaskFlowApp() {
-  const [currentView, setCurrentView] = useState<ViewType>("issues")
+  const [currentView, setCurrentView] = useState<ViewType>("current-sprint")
   const [issues, setIssues] = useState<Issue[]>(initialIssues)
   const [sprints, setSprints] = useState<Sprint[]>(initialSprints)
 

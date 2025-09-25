@@ -162,7 +162,15 @@ export function ReportingView({ issues, sprints }: ReportingViewProps) {
               <span>Overall Completion</span>
               <span className="font-medium">{teamCompletionRate.toFixed(1)}%</span>
             </div>
-            <Progress value={teamCompletionRate} className="h-2" />
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${teamCompletionRate}%`,
+                  backgroundColor: `hsl(120, ${Math.min(100, teamCompletionRate + 20)}%, ${Math.max(40, 80 - teamCompletionRate * 0.4)}%)`,
+                }}
+              />
+            </div>
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{totalCompleted} completed</span>
               <span>{totalIssues - totalCompleted} remaining</span>
@@ -210,7 +218,15 @@ export function ReportingView({ issues, sprints }: ReportingViewProps) {
                         {metrics.completionRate.toFixed(1)}%
                       </span>
                     </div>
-                    <Progress value={metrics.completionRate} className="h-2" />
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="h-2 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${metrics.completionRate}%`,
+                          backgroundColor: `hsl(120, ${Math.min(100, metrics.completionRate + 20)}%, ${Math.max(40, 80 - metrics.completionRate * 0.4)}%)`,
+                        }}
+                      />
+                    </div>
                   </div>
 
                   {/* Task Breakdown */}

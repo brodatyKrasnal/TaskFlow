@@ -19,17 +19,17 @@ export function Navigation({ currentView, onViewChange, issues, sprints }: Navig
 
   const navItems = [
     {
-      id: "issues" as ViewType,
-      label: "Issues",
-      icon: List,
-      count: issues.length,
-    },
-    {
       id: "current-sprint" as ViewType,
       label: "Current Sprint",
       icon: Kanban,
       count: activeSprintIssues.length,
       disabled: !activeSprint,
+    },
+    {
+      id: "issues" as ViewType,
+      label: "Issues",
+      icon: List,
+      count: issues.length,
     },
     {
       id: "sprints" as ViewType,

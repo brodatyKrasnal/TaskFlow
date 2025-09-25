@@ -155,9 +155,10 @@ export function CurrentSprintView({ sprint, issues, onUpdateIssueStatus }: Curre
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div
-                        className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                        className="h-1.5 rounded-full transition-all duration-300"
                         style={{
                           width: `${(completedIssues.length / sprintIssues.length) * 100}%`,
+                          backgroundColor: `hsl(120, ${Math.min(100, (completedIssues.length / sprintIssues.length) * 100 + 20)}%, ${Math.max(40, 80 - (completedIssues.length / sprintIssues.length) * 40)}%)`,
                         }}
                       />
                     </div>
